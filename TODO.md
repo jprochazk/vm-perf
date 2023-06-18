@@ -2,7 +2,7 @@
 
 |                | register | register (+accumulator) | stack |
 | -------------- | -------- | ----------------------- | ----- |
-| loop + switch  | -        | -                       | -     |
+| loop + switch  | ✅       | -                       | -     |
 | goto (x86 asm) | -        | -                       | -     |
 | tail call      | -        | -                       | -     |
 
