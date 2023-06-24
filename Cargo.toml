@@ -7,3 +7,19 @@ edition = "2021"
 
 [dependencies]
 paste = "1.0.12"
+
+[profile.release]
+debug = "full"
+lto = "fat"
+
+[profile.bench]
+debug = "full"
+lto = "fat"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+
+[[bench]]
+name = "fib"
+harness = false

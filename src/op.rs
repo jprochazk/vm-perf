@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+#![allow(non_camel_case_types)]
 
 #[doc(hidden)]
 #[macro_export]
@@ -109,6 +110,11 @@ pub struct Instruction {
 }
 
 impl Instruction {
+  #[inline]
+  pub fn u32(self) -> u32 {
+    unsafe { std::mem::transmute(self) }
+  }
+
   pub fn abc(op: Opcode, a: u8, b: u8, c: u8) -> Self {
     Self {
       op,
@@ -182,7 +188,7 @@ impl Args {
 use private::*;
 
 mod private {
-  #[repr(C)]
+  #[repr(packed)]
   #[derive(Clone, Copy)]
   pub struct abc {
     pub a: u8,
@@ -190,28 +196,28 @@ mod private {
     pub c: u8,
   }
 
-  #[repr(C)]
+  #[repr(packed)]
   #[derive(Clone, Copy)]
   pub struct Lb {
     pub L: u16,
     pub b: u8,
   }
 
-  #[repr(C)]
+  #[repr(packed)]
   #[derive(Clone, Copy)]
   pub struct bL {
     pub b: u8,
     pub L: u16,
   }
 
-  #[repr(C)]
+  #[repr(packed)]
   #[derive(Clone, Copy)]
   pub struct Ix {
     pub I: i16,
     pub x: u8,
   }
 
-  #[repr(C)]
+  #[repr(packed)]
   #[derive(Clone, Copy)]
   pub struct xI {
     pub x: u8,

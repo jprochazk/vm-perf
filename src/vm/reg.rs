@@ -1,6 +1,6 @@
 #![allow(clippy::new_without_default)]
 
-use crate::dispatch::switch;
+use crate::dispatch::{goto, switch};
 use crate::op::{instruction_set, Instruction};
 
 pub struct Thread {
@@ -172,53 +172,68 @@ switch::generate! {
   }
 }
 
+goto::generate! {
+  dispatch_goto(Thread) in inst::opcode where JumpTable {
+    _ nop,
+    ldi,
+    tlt,
+    jif,
+    jl,
+    add,
+    addc,
+    mov,
+    ret,
+    _ hlt,
+  }
+}
+
+pub mod fixture {
+  use super::*;
+
+  pub fn fib() -> (Vec<Instruction>, usize) {
+    /*
+      ldi r1, 0
+      ldi r2, 1
+      ldi r3, 0
+    loop:
+      tlt r3, r0
+      jif end
+      add r4, r1, r2
+      mov r2, r1
+      mov r4, r2
+      addc r3, r3, 1
+      jl loop
+    end:
+      ret r1
+    */
+
+    use inst::make::*;
+
+    let code = vec![
+      ldi(1, 0),
+      ldi(2, 1),
+      ldi(3, 0),
+      // loop:
+      tlt(3, 0, 0),
+      jif(6, 0),
+      add(4, 1, 2),
+      mov(2, 1, 0),
+      mov(4, 2, 0),
+      addc(3, 3, 1),
+      jl(6, 0),
+      // end:
+      ret(1, 0, 0),
+      hlt(),
+    ];
+    let num_regs = 5;
+
+    (code, num_regs)
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
-
-  mod fixture {
-    use super::*;
-
-    pub fn fib() -> (Vec<Instruction>, usize) {
-      /*
-        ldi r1, 0
-        ldi r2, 1
-        ldi r3, 0
-      loop:
-        tlt r3, r0
-        jif end
-        add r4, r1, r2
-        mov r2, r1
-        mov r4, r2
-        addc r3, r3, 1
-        jl loop
-      end:
-        ret r1
-      */
-
-      use inst::make::*;
-
-      let code = vec![
-        ldi(1, 0),
-        ldi(2, 1),
-        ldi(3, 0),
-        // loop:
-        tlt(3, 0, 0),
-        jif(6, 0),
-        add(4, 1, 2),
-        mov(2, 1, 0),
-        mov(4, 2, 0),
-        addc(3, 3, 1),
-        jl(6, 0),
-        // end:
-        ret(1, 0, 0),
-        hlt(),
-      ];
-      let num_regs = 5;
-
-      (code, num_regs)
-    }
-  }
 
   #[test]
   fn test_switch_dispatch() {
@@ -231,6 +246,20 @@ mod tests {
 
     dispatch_switch(&mut thread, &code);
 
-    assert_eq!(thread.ret, crate::tests::fib(20));
+    assert_eq!(thread.ret, crate::fib(20));
+  }
+
+  #[test]
+  fn test_goto_dispatch() {
+    let mut thread = Thread::new();
+
+    let (code, num_regs) = fixture::fib();
+
+    thread.resize(num_regs);
+    thread.regs[0] = 20.0; // fib(20)
+
+    unsafe { dispatch_goto(&mut thread, &code) };
+
+    assert_eq!(thread.ret, crate::fib(20));
   }
 }
