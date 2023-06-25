@@ -1,3 +1,6 @@
+#[macro_use]
+pub mod util;
+
 pub mod dispatch;
 pub mod op;
 pub mod vm;

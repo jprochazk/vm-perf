@@ -40,5 +40,25 @@ pub fn fib_switch(c: &mut Criterion) {
   });
 }
 
-criterion_group!(fib, fib_switch, fib_goto);
+pub fn fib_tail(c: &mut Criterion) {
+  use ::vm::*;
+
+  c.bench_function("fib_tail(20)", |b| {
+    b.iter_with_setup(
+      || {
+        let mut thread = vm::reg::Thread::new();
+        let (code, num_regs) = vm::reg::fixture::fib();
+        thread.resize(num_regs);
+        thread.regs[0] = 20.0; // prepare call to `fib(20)`
+        (thread, code)
+      },
+      |(mut thread, code)| {
+        vm::reg::dispatch_tail(&mut thread, &code);
+        assert_eq!(thread.ret, fib(20));
+      },
+    );
+  });
+}
+
+criterion_group!(fib, fib_switch, fib_goto, fib_tail);
 criterion_main!(fib);

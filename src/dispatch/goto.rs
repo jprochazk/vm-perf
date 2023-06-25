@@ -77,14 +77,6 @@ macro_rules! __target {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! __count {
-  () => {0};
-  ($x:ident) => {1};
-  ($x:ident $($xs:ident)*) => {1+$crate::__count!($($xs)*)};
-}
-
-#[doc(hidden)]
-#[macro_export]
 macro_rules! __generate_goto_dispatch_loop {
   (
     $gen_jump_table:ident();
@@ -94,7 +86,7 @@ macro_rules! __generate_goto_dispatch_loop {
       _ hlt,
     }
   ) => {
-    const N: usize = $crate::__count!(nop $($inst)* hlt);
+    const N: usize = count!(nop $($inst)* hlt);
 
     unsafe fn _op(v: u32) -> usize {
       ::core::mem::transmute::<_, $crate::op::Instruction>(v).op as usize

@@ -1,12 +1,18 @@
 #![allow(clippy::new_without_default)]
 
-use crate::dispatch::{goto, switch};
+use crate::dispatch::{goto, switch, tail};
 use crate::op::{instruction_set, Instruction};
 
 pub struct Thread {
   pub regs: Vec<f64>,
   pub test: bool,
   pub ret: f64,
+}
+
+macro_rules! r {
+  ($self:ident, $i:expr) => {
+    *unsafe { $self.regs.get_unchecked_mut($i) }
+  };
 }
 
 impl Thread {
@@ -25,14 +31,14 @@ impl Thread {
   #[inline(always)]
   fn op_ldi(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.xI();
-    self.regs[args.x as usize] = args.I as f64;
+    r!(self, args.x as usize) = args.I as f64;
     pc + 1
   }
 
   #[inline(always)]
   fn op_tlt(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.test = self.regs[args.a as usize] < self.regs[args.b as usize];
+    self.test = r!(self, args.a as usize) < r!(self, args.b as usize);
     pc + 1
   }
 
@@ -57,28 +63,28 @@ impl Thread {
   #[inline(always)]
   fn op_add(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.regs[args.a as usize] = self.regs[args.b as usize] + self.regs[args.c as usize];
+    r!(self, args.a as usize) = r!(self, args.b as usize) + r!(self, args.c as usize);
     pc + 1
   }
 
   #[inline(always)]
   fn op_addc(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.regs[args.a as usize] = self.regs[args.b as usize] + args.c as f64;
+    r!(self, args.a as usize) = r!(self, args.b as usize) + args.c as f64;
     pc + 1
   }
 
   #[inline(always)]
   fn op_mov(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.regs[args.b as usize] = self.regs[args.a as usize];
+    r!(self, args.b as usize) = r!(self, args.a as usize);
     pc + 1
   }
 
   #[inline(always)]
   fn op_ret(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.ret = self.regs[args.a as usize];
+    self.ret = r!(self, args.a as usize);
     pc + 1
   }
 }
@@ -175,6 +181,21 @@ switch::generate! {
 goto::generate! {
   gen_jump_table();
   dispatch_goto(Thread) in inst::opcode {
+    _ nop,
+    ldi,
+    tlt,
+    jif,
+    jl,
+    add,
+    addc,
+    mov,
+    ret,
+    _ hlt,
+  }
+}
+
+tail::generate! {
+  dispatch_tail(Thread) in inst::opcode {
     _ nop,
     ldi,
     tlt,

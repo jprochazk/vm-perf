@@ -9,7 +9,7 @@ fn run() {
   thread.resize(num_regs);
   thread.regs[0] = 20.0; // fib(20)
 
-  unsafe { vm::reg::dispatch_goto(&mut thread, &code, 0, &vm::reg::gen_jump_table()) };
+  vm::reg::dispatch_tail(&mut thread, &code);
 
   assert_eq!(thread.ret, fib(20));
 
