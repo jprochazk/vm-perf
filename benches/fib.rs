@@ -13,7 +13,7 @@ pub fn fib_goto(c: &mut Criterion) {
         (thread, code)
       },
       |(mut thread, code)| {
-        unsafe { vm::reg::dispatch_goto(&mut thread, &code) };
+        unsafe { vm::reg::dispatch_goto(&mut thread, &code, 0, &vm::reg::gen_jump_table()) };
         assert_eq!(thread.ret, fib(20));
       },
     );

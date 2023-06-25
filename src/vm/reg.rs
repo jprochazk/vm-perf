@@ -173,7 +173,8 @@ switch::generate! {
 }
 
 goto::generate! {
-  dispatch_goto(Thread) in inst::opcode where JumpTable {
+  gen_jump_table();
+  dispatch_goto(Thread) in inst::opcode {
     _ nop,
     ldi,
     tlt,
@@ -258,7 +259,7 @@ mod tests {
     thread.resize(num_regs);
     thread.regs[0] = 20.0; // fib(20)
 
-    unsafe { dispatch_goto(&mut thread, &code) };
+    unsafe { dispatch_goto(&mut thread, &code, 0, &gen_jump_table()) };
 
     assert_eq!(thread.ret, crate::fib(20));
   }
