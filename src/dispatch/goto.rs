@@ -75,53 +75,6 @@ macro_rules! __target {
   };
 }
 
-/* #[doc(hidden)]
-#[macro_export]
-macro_rules! __dispatch {
-  ($thread:ident, $pc:ident, $inst:ident, $code:ident, $jump_table:ident) => {
-    let addr = $jump_table[$inst.op as usize];
-    unsafe {
-      ::core::arch::asm!(
-        "jmpq *{0}",
-        in(reg) addr,
-        in("r8") $thread,
-        in("r9") $pc,
-        in("r10") ::core::mem::transmute::<_, u32>($inst),
-        in("r11") $code as usize,
-        in("r12") $jump_table,
-        options(nostack, att_syntax),
-      );
-    }
-  }
-}
-
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __dispatch_target {
-  ($name:ident($thread:ident, $pc:ident, $inst:ident, $code:ident, $jump_table:ident) $body:block) => {{
-    #![allow(unreachable_code, named_asm_labels)]
-
-    unsafe {
-      ::core::arch::asm!(
-        concat!($crate::__label_name!($name), ":"),
-        in("r8") $thread,
-        in("r9") $pc,
-        in("r10") ::core::mem::transmute::<_, u32>($inst),
-        in("r11") $code as usize,
-        in("r12") $jump_table,
-        options(att_syntax),
-      );
-    }
-
-    {
-      $body
-    }
-
-    $inst = ::core::mem::transmute($code.add($pc).read());
-    $crate::__dispatch!($thread, $pc, $inst, $code, $jump_table);
-  }};
-} */
-
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __count {
