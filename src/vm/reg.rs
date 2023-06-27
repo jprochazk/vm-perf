@@ -610,9 +610,7 @@ mod tests {
 
   const DISPATCH: &[Dispatch] = &[
     ("switch", dispatch::switch),
-    /* ("goto", |thread, code| unsafe {
-      dispatch_goto(thread, code, 0, &gen_jump_table())
-    }), */
+    ("goto", dispatch::goto),
     ("tail", dispatch::tail),
   ];
 

@@ -23,7 +23,12 @@ for b in ["simple_loop", "nested_loop", "unpredictable", "fib_20", "longer_repet
     filename = f"{b}_violin.svg"
     svg_out.mkdir(parents=True, exist_ok=True)
     with open(svg, "r") as f:
-        content = f.read().replace('fill="none"/>', 'fill="white"/>', 1)
+        content = f.read().replace(
+            'xmlns="http://www.w3.org/2000/svg">',
+            'xmlns="http://www.w3.org/2000/svg">\
+            <rect x="0" y="0" width="960" height="204" fill="white"/>',
+            1,
+        )
     with open(svg_out / filename, "w") as f:
         f.write(content)
     graphs += f'<img src="{filename}" />\n'

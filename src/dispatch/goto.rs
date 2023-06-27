@@ -25,6 +25,23 @@ macro_rules! __get_label_address {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "aarch64")]
+macro_rules! __get_label_address {
+  ($name:ident) => {
+    unsafe {
+      let mut addr: usize;
+      ::core::arch::asm!(
+        concat!("adrp {0}, ", $crate::__label_name!($name), "@PAGE"),
+        concat!("add {0}, {0}, ", $crate::__label_name!($name), "@PAGEOFF"),
+        out(reg) addr,
+      );
+      addr
+    }
+  }
+}
+
+#[doc(hidden)]
+#[macro_export]
 #[cfg(target_arch = "x86_64")]
 macro_rules! __label {
   ($name:ident) => {
@@ -34,6 +51,18 @@ macro_rules! __label {
         concat!($crate::__label_name!($name), ":"),
         options(att_syntax),
       );
+    }
+  };
+}
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(not(target_arch = "x86_64"))]
+macro_rules! __label {
+  ($name:ident) => {
+    unsafe {
+      #![allow(named_asm_labels)]
+      ::core::arch::asm!(concat!($crate::__label_name!($name), ":"),);
     }
   };
 }
@@ -60,6 +89,25 @@ macro_rules! __dispatch {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "aarch64")]
+macro_rules! __dispatch {
+  ($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) => {
+      let addr = $jump_table[op($inst)];
+      unsafe {
+        #![allow(unused_assignments)]
+        ::core::arch::asm!(
+          "br {0}",
+          in(reg) addr,
+          in("x9") $thread,
+          in("w10") $inst,
+          in("x11") $pc,
+        );
+      }
+  };
+}
+
+#[doc(hidden)]
+#[macro_export]
 #[cfg(target_arch = "x86_64")]
 macro_rules! __target {
   ($name:ident($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) $body:block) => {
@@ -71,6 +119,29 @@ macro_rules! __target {
         lateout("ecx") $inst,
         lateout("rdx") $pc,
         options(att_syntax),
+      );
+    }
+
+    {
+      $body
+    }
+
+    $crate::__dispatch!($thread, $inst, $pc, $jump_table);
+  };
+}
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(target_arch = "aarch64")]
+macro_rules! __target {
+  ($name:ident($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) $body:block) => {
+    unsafe {
+      #![allow(named_asm_labels, unused_assignments)]
+      ::core::arch::asm!(
+        concat!($crate::__label_name!($name), ":"),
+        lateout("x9") $thread,
+        lateout("w10") $inst,
+        lateout("x11") $pc,
       );
     }
 
