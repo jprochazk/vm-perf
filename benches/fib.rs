@@ -5,6 +5,7 @@ macro_rules! bench_fixture {
     pub fn $fixture(c: &mut Criterion) {
       bench_fixture!(@function c switch $fixture);
       bench_fixture!(@function c tail $fixture);
+      bench_fixture!(@function c goto $fixture);
     }
   };
   (@function $c:ident $dispatch:ident $fixture:ident) => {

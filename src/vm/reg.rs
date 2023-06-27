@@ -3,7 +3,7 @@
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 
-use crate::dispatch::{switch, tail};
+use crate::dispatch::{goto, switch, tail};
 use crate::op::{instruction_set, Instruction};
 
 pub struct Thread {
@@ -223,9 +223,9 @@ pub mod dispatch {
     }
   }
 
-  /* goto::generate! {
+  goto::generate! {
     gen_jump_table();
-    goto(Thread) in inst::opcode {
+    goto_inner(Thread) in inst::opcode {
       _ nop,
       ldi,
       tlt,
@@ -240,7 +240,11 @@ pub mod dispatch {
       ret,
       _ hlt,
     }
-  } */
+  }
+
+  pub fn goto(thread: &mut Thread, code: &[Instruction]) {
+    unsafe { goto_inner(thread, code, 0, &gen_jump_table()) }
+  }
 
   tail::generate! {
     tail(Thread) in inst::opcode {
