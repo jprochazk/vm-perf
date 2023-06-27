@@ -31,7 +31,7 @@ The same as [nested loop](#nested-loop), but each instruction is followed by 3 `
 
 ### Unpredictable
 
-Similar to [nested loop](#nested-loop), but randomly repeats iterations of both the inner and outer loop. The idea is to make the loop. The rng uses the same seed for all dispatch methods, so they all do the same number of iterations.
+Similar to [nested loop](#nested-loop), but randomly repeats iterations of both the inner and outer loop. The idea is to make the loop more unpredictable. The rng uses the same seed for all dispatch methods, so they all do the same number of iterations.
 
 <img src="./report/unpredictable_violin.svg">
 
