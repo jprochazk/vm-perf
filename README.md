@@ -11,7 +11,7 @@ $ ./report.py
 
 ## Results
 
-Benchmarks were recorded on a 7950x.
+Benchmarks were recorded on an AMD Ryzen 9 7950X.
 
 ### Simple loop
 
