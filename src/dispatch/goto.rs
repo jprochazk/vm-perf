@@ -42,6 +42,7 @@ macro_rules! __dispatch {
   ($inst:ident, $pc:ident, $jump_table:ident) => {
     let addr = $jump_table[op($inst)];
     unsafe {
+      #![allow(unused_assignments)]
       ::core::arch::asm!(
         "jmpq *{0}",
         in(reg) addr,
@@ -87,10 +88,6 @@ macro_rules! __generate_goto_dispatch_loop {
     }
   ) => {
     const N: usize = count!(nop $($inst)* hlt);
-
-    unsafe fn _op(v: u32) -> usize {
-      ::core::mem::transmute::<_, $crate::op::Instruction>(v).op as usize
-    }
 
     pub fn $gen_jump_table() -> [usize; N] {
       use $inst_mod::*;

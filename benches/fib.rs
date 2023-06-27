@@ -1,64 +1,47 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
-pub fn fib_goto(c: &mut Criterion) {
-  use ::vm::*;
-
-  c.bench_function("fib_goto(20)", |b| {
-    b.iter_with_setup(
-      || {
-        let mut thread = vm::reg::Thread::new();
-        let (code, num_regs) = vm::reg::fixture::fib();
-        thread.resize(num_regs);
-        thread.regs[0] = 20.0; // prepare call to `fib(20)`
-        (thread, code)
+macro_rules! bench_fixture {
+  ($fixture:ident) => {
+    pub fn $fixture(c: &mut Criterion) {
+      bench_fixture!(@function c switch $fixture);
+      bench_fixture!(@function c tail $fixture);
+    }
+  };
+  (@function $c:ident $dispatch:ident $fixture:ident) => {
+    $c.bench_function(
+      concat!(stringify!($dispatch), ".", stringify!($fixture)),
+      |b| {
+        use ::vm::vm::reg::*;
+        b.iter_with_setup(
+          || {
+            let mut thread = Thread::new();
+            let (code, setup, assert) = fixture::$fixture();
+            setup(&mut thread);
+            (thread, code, assert)
+          },
+          |(mut thread, code, assert)| {
+            dispatch::$dispatch(&mut thread, &code);
+            assert(&thread);
+          },
+        );
       },
-      |(mut thread, code)| {
-        unsafe { vm::reg::dispatch_goto(&mut thread, &code, 0, &vm::reg::gen_jump_table()) };
-        assert_eq!(thread.ret, fib(20));
-      },
-    );
-  });
+    )
+  };
 }
 
-pub fn fib_switch(c: &mut Criterion) {
-  use ::vm::*;
+bench_fixture!(fib_20);
+bench_fixture!(simple_loop);
+bench_fixture!(nested_loop);
+bench_fixture!(longer_repetitive);
+bench_fixture!(unpredictable);
 
-  c.bench_function("fib_switch(20)", |b| {
-    b.iter_with_setup(
-      || {
-        let mut thread = vm::reg::Thread::new();
-        let (code, num_regs) = vm::reg::fixture::fib();
-        thread.resize(num_regs);
-        thread.regs[0] = 20.0; // prepare call to `fib(20)`
-        (thread, code)
-      },
-      |(mut thread, code)| {
-        vm::reg::dispatch_switch(&mut thread, &code);
-        assert_eq!(thread.ret, fib(20));
-      },
-    );
-  });
-}
+criterion_group!(
+  benches,
+  fib_20,
+  simple_loop,
+  nested_loop,
+  longer_repetitive,
+  unpredictable
+);
 
-pub fn fib_tail(c: &mut Criterion) {
-  use ::vm::*;
-
-  c.bench_function("fib_tail(20)", |b| {
-    b.iter_with_setup(
-      || {
-        let mut thread = vm::reg::Thread::new();
-        let (code, num_regs) = vm::reg::fixture::fib();
-        thread.resize(num_regs);
-        thread.regs[0] = 20.0; // prepare call to `fib(20)`
-        (thread, code)
-      },
-      |(mut thread, code)| {
-        vm::reg::dispatch_tail(&mut thread, &code);
-        assert_eq!(thread.ret, fib(20));
-      },
-    );
-  });
-}
-
-criterion_group!(fib, fib_switch, fib_goto, fib_tail);
-criterion_main!(fib);
+criterion_main!(benches);
