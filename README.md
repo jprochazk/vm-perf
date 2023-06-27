@@ -11,6 +11,6 @@ $ ./report.py
 
 ### Results
 
-<img src="./report/simple_loop.svg">
-<img src="./report/nested_loop.svg">
-<img src="./report/unpredictable.svg">
+<img src="./report/simple_loop_violin.svg">
+<img src="./report/nested_loop_violin.svg">
+<img src="./report/unpredictable_violin.svg">
