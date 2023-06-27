@@ -39,13 +39,14 @@ macro_rules! __label {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __dispatch {
-  ($inst:ident, $pc:ident, $jump_table:ident) => {
+  ($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) => {
     let addr = $jump_table[op($inst)];
     unsafe {
       #![allow(unused_assignments)]
       ::core::arch::asm!(
         "jmpq *{0}",
         in(reg) addr,
+        in("r8") $thread,
         in("ecx") $inst,
         in("rdx") $pc,
         options(att_syntax),
@@ -57,11 +58,12 @@ macro_rules! __dispatch {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __target {
-  ($name:ident($inst:ident, $pc:ident, $jump_table:ident) $body:block) => {
+  ($name:ident($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) $body:block) => {
     unsafe {
       #![allow(named_asm_labels, unused_assignments)]
       ::core::arch::asm!(
         concat!($crate::__label_name!($name), ":"),
+        lateout("r8") $thread,
         lateout("ecx") $inst,
         lateout("rdx") $pc,
         options(att_syntax),
@@ -72,7 +74,7 @@ macro_rules! __target {
       $body
     }
 
-    $crate::__dispatch!($inst, $pc, $jump_table);
+    $crate::__dispatch!($thread, $inst, $pc, $jump_table);
   };
 }
 
@@ -116,19 +118,20 @@ macro_rules! __generate_goto_dispatch_loop {
       #[no_mangle]
       pub unsafe fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction], pc: usize, jump_table: &[usize; N]) {
         let code = unsafe { ::core::mem::transmute::<_, &[u32]>(code) };
+        let mut thread = thread as *mut $thread;
         let mut pc = pc;
         let mut inst = code[pc];
 
-        $crate::__dispatch!(inst, pc, jump_table);
+        $crate::__dispatch!(thread, inst, pc, jump_table);
 
-        $crate::__target!(nop(inst, pc, jump_table) {
+        $crate::__target!(nop(thread, inst, pc, jump_table) {
           pc += 1;
           inst = code[pc];
         });
 
         $(
-          $crate::__target!($inst(inst, pc, jump_table) {
-            pc = thread.[<op_ $inst>](pc, to_inst(inst));
+          $crate::__target!($inst(thread, inst, pc, jump_table) {
+            pc = (*thread).[<op_ $inst>](pc, to_inst(inst));
             inst = code[pc];
           });
         )*

@@ -17,7 +17,7 @@ template = """<!DOCTYPE html>
 
 graphs = ""
 base = Path("target/criterion")
-for b in ["simple_loop", "nested_loop", "unpredictable"]:
+for b in ["simple_loop", "nested_loop", "unpredictable", "fib_20", "longer_repetitive"]:
     svg = base / b / "report" / "violin.svg"
     svg_out = Path("report")
     filename = f"{b}_violin.svg"

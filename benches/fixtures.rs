@@ -39,10 +39,10 @@ bench_fixture!(fib_20);
 
 criterion_group!(
   benches,
-  //fib_20,
+  fib_20,
   simple_loop,
   nested_loop,
-  //longer_repetitive,
+  longer_repetitive,
   unpredictable
 );
 
