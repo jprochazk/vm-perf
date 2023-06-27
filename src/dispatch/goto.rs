@@ -8,6 +8,7 @@ macro_rules! __label_name {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "x86_64")]
 macro_rules! __get_label_address {
   ($name:ident) => {
     unsafe {
@@ -24,6 +25,7 @@ macro_rules! __get_label_address {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "x86_64")]
 macro_rules! __label {
   ($name:ident) => {
     unsafe {
@@ -38,6 +40,7 @@ macro_rules! __label {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "x86_64")]
 macro_rules! __dispatch {
   ($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) => {
     let addr = $jump_table[op($inst)];
@@ -57,6 +60,7 @@ macro_rules! __dispatch {
 
 #[doc(hidden)]
 #[macro_export]
+#[cfg(target_arch = "x86_64")]
 macro_rules! __target {
   ($name:ident($thread:ident, $inst:ident, $pc:ident, $jump_table:ident) $body:block) => {
     unsafe {
