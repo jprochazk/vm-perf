@@ -11,6 +11,8 @@ $ ./report.py
 
 ## Results
 
+Benchmarks were recorded on a 7950x.
+
 ### Simple loop
 
 A basic loop. The body of the loop does no work other than decrement the counter from `42` to `0`.
