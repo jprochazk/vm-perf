@@ -2,6 +2,13 @@
 
 This is an attempt to compare various dispatch techniques and VM architectures.
 
+It is a follow-up to the great work done in [pliniker/dispatches](https://github.com/pliniker/dispatchers).
+There are a few differences, including (but not limited to):
+- Computed goto implementation uses the now-stable Rust inline assembly, and is implemented only for `x86_64` and `aarch64` (mach-o only, elf doesn't work).
+- The bytecode used in benchmarks is much closer to what an actual bytecode compiler would generate [^1]
+- Added an extra benchmark: `fib_20`, which calculates the 20th fibonacci number using an iterative algorithm.
+- This experiment also attempts to compare different VM architectures instead of only comparing dispatch techniques for the same register-based VM.
+
 The VM architectures implemented are:
 - Register-based
 - 🚧 Stack-based
@@ -96,3 +103,4 @@ Uses an iterative algorithm to calculate the 20th fibonacci number.
 <img src="./results/aarch64/unpredictable_violin.svg">
 <img src="./results/aarch64/fib_20_violin.svg">
 
+[^1]: For example, each loop is prefixed by a proper loop header which checks the condition first and only then enters the loop, as opposed to assuming that the first iteration of the loop should always run. This required making some changes to the instruction set, such as using `jump if false` (`jif`) instead of `jump if true` (`jit`).
