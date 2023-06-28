@@ -1,5 +1,7 @@
 #![allow(clippy::new_without_default)]
 
+use std::str::FromStr;
+
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 
@@ -19,16 +21,27 @@ macro_rules! r {
   };
 }
 
+fn get_seed() -> [u8; 32] {
+  let mut seed = [0u8; 32];
+
+  for (i, v) in include_str!("seed.txt")
+    .split(',')
+    .flat_map(<u8 as FromStr>::from_str)
+    .enumerate()
+  {
+    seed[i] = v;
+  }
+
+  seed
+}
+
 impl Thread {
   pub fn new() -> Self {
     Self {
       regs: vec![0; 32],
       test: false,
       ret: 0,
-      rng: SmallRng::from_seed([
-        77, 10, 72, 73, 228, 163, 96, 86, 108, 84, 126, 195, 80, 154, 222, 167, 255, 148, 80, 3, 1,
-        80, 64, 102, 68, 60, 242, 172, 172, 91, 225, 36,
-      ]),
+      rng: SmallRng::from_seed(get_seed()),
     }
   }
 
