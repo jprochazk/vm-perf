@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
-from subprocess import check_output
 
 template = """<!DOCTYPE html>
 <html>
@@ -38,4 +37,4 @@ index = template.replace("{{graphs}}", graphs)
 with open(Path("report") / "index.html", "w") as f:
     f.write(index)
 
-check_output(["open", "report/index.html"])
+print("Open ./report/index.html")
