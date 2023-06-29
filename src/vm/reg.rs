@@ -6,12 +6,13 @@ use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 
 use crate::dispatch::{goto, switch, tail};
+use crate::nanbox::Value;
 use crate::op::{instruction_set, Instruction};
 
 pub struct Thread {
-  pub regs: Vec<i32>,
+  pub regs: Vec<Value>,
   pub test: bool,
-  pub ret: i32,
+  pub ret: Value,
   pub rng: SmallRng,
 }
 
@@ -38,35 +39,35 @@ fn get_seed() -> [u8; 32] {
 impl Thread {
   pub fn new() -> Self {
     Self {
-      regs: vec![0; 32],
+      regs: vec![Value::none(); 32],
       test: false,
-      ret: 0,
+      ret: Value::none(),
       rng: SmallRng::from_seed(get_seed()),
     }
   }
 
   pub fn resize(&mut self, capacity: usize) {
-    self.regs.resize(capacity, 0)
+    self.regs.resize(capacity, Value::none())
   }
 
   #[inline(always)]
   fn op_ldi(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.xI();
-    r!(self, args.x as usize) = args.I as i32;
+    r!(self, args.x as usize) = Value::int(args.I as i32);
     pc + 1
   }
 
   #[inline(always)]
   fn op_tlt(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.test = r!(self, args.a as usize) < r!(self, args.b as usize);
+    self.test = r!(self, args.a as usize).op_lt(r!(self, args.b as usize));
     pc + 1
   }
 
   #[inline(always)]
   fn op_tne(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    self.test = r!(self, args.a as usize) != r!(self, args.b as usize);
+    self.test = r!(self, args.a as usize).op_ne(r!(self, args.b as usize));
     pc + 1
   }
 
@@ -91,28 +92,28 @@ impl Thread {
   #[inline(always)]
   fn op_add(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    r!(self, args.a as usize) = r!(self, args.b as usize) + r!(self, args.c as usize);
+    r!(self, args.a as usize) = r!(self, args.b as usize).op_add(r!(self, args.c as usize));
     pc + 1
   }
 
   #[inline(always)]
   fn op_addc(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    r!(self, args.a as usize) = r!(self, args.b as usize) + args.c as i32;
+    r!(self, args.a as usize) = r!(self, args.b as usize).op_add(Value::int(args.c as i32));
     pc + 1
   }
 
   #[inline(always)]
   fn op_rnd(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    r!(self, args.a as usize) = self.rng.gen();
+    r!(self, args.a as usize) = Value::int(self.rng.gen::<i32>());
     pc + 1
   }
 
   #[inline(always)]
   fn op_rem(&mut self, pc: usize, inst: Instruction) -> usize {
     let args = inst.args.abc();
-    r!(self, args.a as usize) = r!(self, args.b as usize) % r!(self, args.c as usize);
+    r!(self, args.a as usize) = r!(self, args.b as usize).op_rem(r!(self, args.c as usize));
     pc + 1
   }
 
@@ -341,7 +342,7 @@ pub mod fixture {
     };
 
     let assert = |thread: &Thread| {
-      assert_eq!(thread.regs[2], 0);
+      assert!(thread.regs[2].op_eq(Value::int(0)));
     };
 
     (code, setup, assert)
@@ -398,8 +399,8 @@ pub mod fixture {
     };
 
     let assert = |thread: &Thread| {
-      assert_eq!(thread.regs[2], 0);
-      assert_eq!(thread.regs[3], 0);
+      assert!(thread.regs[2].op_eq(Value::int(0)));
+      assert!(thread.regs[3].op_eq(Value::int(0)));
     };
 
     (code, setup, assert)
@@ -416,6 +417,7 @@ pub mod fixture {
       asm::ldi(r0, 0),
       asm::ldi(r1, -1),
       asm::ldi(r2, 10000),
+      asm::ldi(r3, 0),
       asm::add(r0, r0, r0),
       asm::add(r3, r3, r0),
       asm::add(r0, r0, r0),
@@ -470,8 +472,8 @@ pub mod fixture {
     };
 
     let assert = |thread: &Thread| {
-      assert_eq!(thread.regs[2], 0);
-      assert_eq!(thread.regs[3], 0);
+      assert!(thread.regs[2].op_eq(Value::int(0)));
+      assert!(thread.regs[3].op_eq(Value::int(0)));
     };
 
     (code, setup, assert)
@@ -553,7 +555,7 @@ pub mod fixture {
     };
 
     let assert = |thread: &Thread| {
-      assert_eq!(thread.regs[3], 0);
+      assert!(thread.regs[3].op_eq(Value::int(0)));
     };
 
     (code, setup, assert)
@@ -604,11 +606,11 @@ pub mod fixture {
 
     let setup = |thread: &mut Thread| {
       thread.resize(5);
-      thread.regs[0] = 20;
+      thread.regs[0] = Value::int(20);
     };
 
     let assert = |thread: &Thread| {
-      assert_eq!(thread.ret, crate::fib(20));
+      assert_eq!(thread.ret.to_int().unwrap(), crate::fib(20));
     };
 
     (code, setup, assert)

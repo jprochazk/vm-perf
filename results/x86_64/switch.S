@@ -1,149 +1,159 @@
-
-00000000002502a0 <switch>:
-  2502a0:	55                   	push   rbp
-  2502a1:	41 57                	push   r15
-  2502a3:	41 56                	push   r14
-  2502a5:	41 55                	push   r13
-  2502a7:	41 54                	push   r12
-  2502a9:	53                   	push   rbx
-  2502aa:	50                   	push   rax
-  2502ab:	48 85 d2             	test   rdx,rdx
-  2502ae:	0f 84 e3 01 00 00    	je     250497 <switch+0x1f7>
-  2502b4:	48 89 d1             	mov    rcx,rdx
-  2502b7:	4c 8b 0f             	mov    r9,QWORD PTR [rdi]
-  2502ba:	4c 8b 57 18          	mov    r10,QWORD PTR [rdi+0x18]
-  2502be:	4c 8b 5f 30          	mov    r11,QWORD PTR [rdi+0x30]
-  2502c2:	48 8b 5f 20          	mov    rbx,QWORD PTR [rdi+0x20]
-  2502c6:	4c 8b 77 28          	mov    r14,QWORD PTR [rdi+0x28]
-  2502ca:	0f b6 6f 3c          	movzx  ebp,BYTE PTR [rdi+0x3c]
-  2502ce:	45 31 c0             	xor    r8d,r8d
-  2502d1:	4c 8d 3d 14 79 e0 ff 	lea    r15,[rip+0xffffffffffe07914]        # 57bec <GCC_except_table2689+0x4de8>
-  2502d8:	eb 32                	jmp    25030c <switch+0x6c>
-  2502da:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  2502de:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
-  2502e2:	41 8b 14 91          	mov    edx,DWORD PTR [r9+rdx*4]
-  2502e6:	41 3b 14 81          	cmp    edx,DWORD PTR [r9+rax*4]
-  2502ea:	40 0f 9c c5          	setl   bpl
-  2502ee:	0f 9c 47 3c          	setl   BYTE PTR [rdi+0x3c]
-  2502f2:	66 66 66 66 66 2e 0f 	data16 data16 data16 data16 cs nop WORD PTR [rax+rax*1+0x0]
-  2502f9:	1f 84 00 00 00 00 00 
-  250300:	49 ff c0             	inc    r8
-  250303:	49 39 c8             	cmp    r8,rcx
-  250306:	0f 83 43 01 00 00    	jae    25044f <switch+0x1af>
-  25030c:	42 0f b6 14 86       	movzx  edx,BYTE PTR [rsi+r8*4]
-  250311:	48 83 fa 0c          	cmp    rdx,0xc
-  250315:	0f 87 8e 01 00 00    	ja     2504a9 <switch+0x209>
-  25031b:	4a 8d 04 86          	lea    rax,[rsi+r8*4]
-  25031f:	49 63 14 97          	movsxd rdx,DWORD PTR [r15+rdx*4]
-  250323:	4c 01 fa             	add    rdx,r15
-  250326:	ff e2                	jmp    rdx
-  250328:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  25032c:	0f bf 40 02          	movsx  eax,WORD PTR [rax+0x2]
-  250330:	41 89 04 91          	mov    DWORD PTR [r9+rdx*4],eax
-  250334:	eb ca                	jmp    250300 <switch+0x60>
-  250336:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  25033a:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
-  25033e:	41 8b 14 91          	mov    edx,DWORD PTR [r9+rdx*4]
-  250342:	41 3b 14 81          	cmp    edx,DWORD PTR [r9+rax*4]
-  250346:	40 0f 95 c5          	setne  bpl
-  25034a:	0f 95 47 3c          	setne  BYTE PTR [rdi+0x3c]
-  25034e:	eb b0                	jmp    250300 <switch+0x60>
-  250350:	0f b7 40 01          	movzx  eax,WORD PTR [rax+0x1]
-  250354:	40 84 ed             	test   bpl,bpl
-  250357:	ba 01 00 00 00       	mov    edx,0x1
-  25035c:	48 0f 45 c2          	cmovne rax,rdx
-  250360:	49 01 c0             	add    r8,rax
-  250363:	c6 47 3c 00          	mov    BYTE PTR [rdi+0x3c],0x0
-  250367:	31 ed                	xor    ebp,ebp
-  250369:	eb 98                	jmp    250303 <switch+0x63>
-  25036b:	0f b7 40 01          	movzx  eax,WORD PTR [rax+0x1]
-  25036f:	49 29 c0             	sub    r8,rax
-  250372:	eb 8f                	jmp    250303 <switch+0x63>
-  250374:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  250378:	44 0f b6 60 02       	movzx  r12d,BYTE PTR [rax+0x2]
-  25037d:	0f b6 40 03          	movzx  eax,BYTE PTR [rax+0x3]
-  250381:	41 8b 04 81          	mov    eax,DWORD PTR [r9+rax*4]
-  250385:	eb 0d                	jmp    250394 <switch+0xf4>
-  250387:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  25038b:	44 0f b6 60 02       	movzx  r12d,BYTE PTR [rax+0x2]
-  250390:	0f b6 40 03          	movzx  eax,BYTE PTR [rax+0x3]
-  250394:	43 03 04 a1          	add    eax,DWORD PTR [r9+r12*4]
-  250398:	41 89 04 91          	mov    DWORD PTR [r9+rdx*4],eax
-  25039c:	e9 5f ff ff ff       	jmp    250300 <switch+0x60>
-  2503a1:	0f b6 40 01          	movzx  eax,BYTE PTR [rax+0x1]
-  2503a5:	4b 8d 14 13          	lea    rdx,[r11+r10*1]
-  2503a9:	48 c1 c2 17          	rol    rdx,0x17
-  2503ad:	4c 01 d2             	add    rdx,r10
-  2503b0:	49 89 dc             	mov    r12,rbx
-  2503b3:	49 c1 e4 11          	shl    r12,0x11
-  2503b7:	4d 31 d6             	xor    r14,r10
-  2503ba:	49 31 db             	xor    r11,rbx
-  2503bd:	4c 31 f3             	xor    rbx,r14
-  2503c0:	48 89 5f 20          	mov    QWORD PTR [rdi+0x20],rbx
-  2503c4:	4d 31 da             	xor    r10,r11
-  2503c7:	4c 89 57 18          	mov    QWORD PTR [rdi+0x18],r10
-  2503cb:	4d 31 e6             	xor    r14,r12
-  2503ce:	4c 89 77 28          	mov    QWORD PTR [rdi+0x28],r14
-  2503d2:	49 c1 c3 2d          	rol    r11,0x2d
-  2503d6:	4c 89 5f 30          	mov    QWORD PTR [rdi+0x30],r11
-  2503da:	48 c1 ea 20          	shr    rdx,0x20
-  2503de:	41 89 14 81          	mov    DWORD PTR [r9+rax*4],edx
-  2503e2:	e9 19 ff ff ff       	jmp    250300 <switch+0x60>
-  2503e7:	0f b6 50 03          	movzx  edx,BYTE PTR [rax+0x3]
-  2503eb:	45 8b 2c 91          	mov    r13d,DWORD PTR [r9+rdx*4]
-  2503ef:	45 85 ed             	test   r13d,r13d
-  2503f2:	74 6f                	je     250463 <switch+0x1c3>
-  2503f4:	44 0f b6 60 01       	movzx  r12d,BYTE PTR [rax+0x1]
-  2503f9:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
-  2503fd:	41 8b 04 81          	mov    eax,DWORD PTR [r9+rax*4]
-  250401:	3d 00 00 00 80       	cmp    eax,0x80000000
-  250406:	75 06                	jne    25040e <switch+0x16e>
-  250408:	41 83 fd ff          	cmp    r13d,0xffffffff
-  25040c:	74 6f                	je     25047d <switch+0x1dd>
-  25040e:	99                   	cdq    
-  25040f:	41 f7 fd             	idiv   r13d
-  250412:	43 89 14 a1          	mov    DWORD PTR [r9+r12*4],edx
-  250416:	e9 e5 fe ff ff       	jmp    250300 <switch+0x60>
-  25041b:	0f b6 50 01          	movzx  edx,BYTE PTR [rax+0x1]
-  25041f:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
-  250423:	41 8b 14 91          	mov    edx,DWORD PTR [r9+rdx*4]
-  250427:	41 89 14 81          	mov    DWORD PTR [r9+rax*4],edx
-  25042b:	e9 d0 fe ff ff       	jmp    250300 <switch+0x60>
-  250430:	0f b6 40 01          	movzx  eax,BYTE PTR [rax+0x1]
-  250434:	41 8b 04 81          	mov    eax,DWORD PTR [r9+rax*4]
-  250438:	89 47 38             	mov    DWORD PTR [rdi+0x38],eax
-  25043b:	e9 c0 fe ff ff       	jmp    250300 <switch+0x60>
-  250440:	48 83 c4 08          	add    rsp,0x8
-  250444:	5b                   	pop    rbx
-  250445:	41 5c                	pop    r12
-  250447:	41 5d                	pop    r13
-  250449:	41 5e                	pop    r14
-  25044b:	41 5f                	pop    r15
-  25044d:	5d                   	pop    rbp
-  25044e:	c3                   	ret    
-  25044f:	48 8d 15 12 31 01 00 	lea    rdx,[rip+0x13112]        # 263568 <_DYNAMIC+0xcc78>
-  250456:	4c 89 c7             	mov    rdi,r8
-  250459:	48 89 ce             	mov    rsi,rcx
-  25045c:	e8 5f d8 e5 ff       	call   adcc0 <core::panicking::panic_bounds_check>
-  250461:	0f 0b                	ud2    
-  250463:	48 8d 3d 86 21 e2 ff 	lea    rdi,[rip+0xffffffffffe22186]        # 725f0 <str.0.9766>
-  25046a:	48 8d 15 0f 31 01 00 	lea    rdx,[rip+0x1310f]        # 263580 <_DYNAMIC+0xcc90>
-  250471:	be 39 00 00 00       	mov    esi,0x39
-  250476:	e8 b5 e8 e5 ff       	call   aed30 <core::panicking::panic>
-  25047b:	0f 0b                	ud2    
-  25047d:	48 8d 3d ac 21 e2 ff 	lea    rdi,[rip+0xffffffffffe221ac]        # 72630 <str.1.9767>
-  250484:	48 8d 15 f5 30 01 00 	lea    rdx,[rip+0x130f5]        # 263580 <_DYNAMIC+0xcc90>
-  25048b:	be 30 00 00 00       	mov    esi,0x30
-  250490:	e8 9b e8 e5 ff       	call   aed30 <core::panicking::panic>
-  250495:	0f 0b                	ud2    
-  250497:	48 8d 15 ca 30 01 00 	lea    rdx,[rip+0x130ca]        # 263568 <_DYNAMIC+0xcc78>
-  25049e:	31 ff                	xor    edi,edi
-  2504a0:	31 f6                	xor    esi,esi
-  2504a2:	e8 19 d8 e5 ff       	call   adcc0 <core::panicking::panic_bounds_check>
-  2504a7:	0f 0b                	ud2    
-  2504a9:	48 8d 3d b0 21 e2 ff 	lea    rdi,[rip+0xffffffffffe221b0]        # 72660 <str.1.9767+0x30>
-  2504b0:	48 8d 15 b1 30 01 00 	lea    rdx,[rip+0x130b1]        # 263568 <_DYNAMIC+0xcc78>
-  2504b7:	be 28 00 00 00       	mov    esi,0x28
-  2504bc:	e8 6f e8 e5 ff       	call   aed30 <core::panicking::panic>
-  2504c1:	0f 0b                	ud2    
+0000000000251080 <switch>:
+  251080:	55                   	push   rbp
+  251081:	41 57                	push   r15
+  251083:	41 56                	push   r14
+  251085:	41 55                	push   r13
+  251087:	41 54                	push   r12
+  251089:	53                   	push   rbx
+  25108a:	48 83 ec 38          	sub    rsp,0x38
+  25108e:	48 85 d2             	test   rdx,rdx
+  251091:	0f 84 34 02 00 00    	je     2512cb <switch+0x24b>
+  251097:	48 89 d3             	mov    rbx,rdx
+  25109a:	49 89 f6             	mov    r14,rsi
+  25109d:	49 89 ff             	mov    r15,rdi
+  2510a0:	4c 8b 2f             	mov    r13,QWORD PTR [rdi]
+  2510a3:	48 8b 47 20          	mov    rax,QWORD PTR [rdi+0x20]
+  2510a7:	48 89 44 24 30       	mov    QWORD PTR [rsp+0x30],rax
+  2510ac:	48 8b 47 38          	mov    rax,QWORD PTR [rdi+0x38]
+  2510b0:	48 89 44 24 28       	mov    QWORD PTR [rsp+0x28],rax
+  2510b5:	48 8b 47 28          	mov    rax,QWORD PTR [rdi+0x28]
+  2510b9:	48 89 44 24 20       	mov    QWORD PTR [rsp+0x20],rax
+  2510be:	48 8b 47 30          	mov    rax,QWORD PTR [rdi+0x30]
+  2510c2:	48 89 44 24 18       	mov    QWORD PTR [rsp+0x18],rax
+  2510c7:	0f b6 47 40          	movzx  eax,BYTE PTR [rdi+0x40]
+  2510cb:	89 44 24 0c          	mov    DWORD PTR [rsp+0xc],eax
+  2510cf:	45 31 e4             	xor    r12d,r12d
+  2510d2:	48 8d 2d d3 6e e0 ff 	lea    rbp,[rip+0xffffffffffe06ed3]        # 57fac <GCC_except_table2696+0x4de8>
+  2510d9:	48 89 7c 24 10       	mov    QWORD PTR [rsp+0x10],rdi
+  2510de:	eb 2c                	jmp    25110c <switch+0x8c>
+  2510e0:	0f b6 48 01          	movzx  ecx,BYTE PTR [rax+0x1]
+  2510e4:	48 0f bf 40 02       	movsx  rax,WORD PTR [rax+0x2]
+  2510e9:	89 c0                	mov    eax,eax
+  2510eb:	48 ba 00 00 00 00 00 	movabs rdx,0x7ffc000000000000
+  2510f2:	00 fc 7f 
+  2510f5:	48 09 d0             	or     rax,rdx
+  2510f8:	49 89 44 cd 00       	mov    QWORD PTR [r13+rcx*8+0x0],rax
+  2510fd:	0f 1f 00             	nop    DWORD PTR [rax]
+  251100:	49 ff c4             	inc    r12
+  251103:	49 39 dc             	cmp    r12,rbx
+  251106:	0f 83 ab 01 00 00    	jae    2512b7 <switch+0x237>
+  25110c:	43 0f b6 0c a6       	movzx  ecx,BYTE PTR [r14+r12*4]
+  251111:	48 83 f9 0c          	cmp    rcx,0xc
+  251115:	0f 87 c2 01 00 00    	ja     2512dd <switch+0x25d>
+  25111b:	4b 8d 04 a6          	lea    rax,[r14+r12*4]
+  25111f:	48 63 4c 8d 00       	movsxd rcx,DWORD PTR [rbp+rcx*4+0x0]
+  251124:	48 01 e9             	add    rcx,rbp
+  251127:	ff e1                	jmp    rcx
+  251129:	0f b6 48 01          	movzx  ecx,BYTE PTR [rax+0x1]
+  25112d:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
+  251131:	49 8b 7c cd 00       	mov    rdi,QWORD PTR [r13+rcx*8+0x0]
+  251136:	49 8b 74 c5 00       	mov    rsi,QWORD PTR [r13+rax*8+0x0]
+  25113b:	e8 60 1e 00 00       	call   252fa0 <vm::nanbox::Value::op_lt>
+  251140:	eb 17                	jmp    251159 <switch+0xd9>
+  251142:	0f b6 48 01          	movzx  ecx,BYTE PTR [rax+0x1]
+  251146:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
+  25114a:	49 8b 7c cd 00       	mov    rdi,QWORD PTR [r13+rcx*8+0x0]
+  25114f:	49 8b 74 c5 00       	mov    rsi,QWORD PTR [r13+rax*8+0x0]
+  251154:	e8 97 1f 00 00       	call   2530f0 <vm::nanbox::Value::op_ne>
+  251159:	89 44 24 0c          	mov    DWORD PTR [rsp+0xc],eax
+  25115d:	41 88 47 40          	mov    BYTE PTR [r15+0x40],al
+  251161:	eb 9d                	jmp    251100 <switch+0x80>
+  251163:	0f b7 40 01          	movzx  eax,WORD PTR [rax+0x1]
+  251167:	80 7c 24 0c 00       	cmp    BYTE PTR [rsp+0xc],0x0
+  25116c:	b9 01 00 00 00       	mov    ecx,0x1
+  251171:	48 0f 45 c1          	cmovne rax,rcx
+  251175:	49 01 c4             	add    r12,rax
+  251178:	41 c6 47 40 00       	mov    BYTE PTR [r15+0x40],0x0
+  25117d:	c7 44 24 0c 00 00 00 	mov    DWORD PTR [rsp+0xc],0x0
+  251184:	00 
+  251185:	e9 79 ff ff ff       	jmp    251103 <switch+0x83>
+  25118a:	0f b7 40 01          	movzx  eax,WORD PTR [rax+0x1]
+  25118e:	49 29 c4             	sub    r12,rax
+  251191:	e9 6d ff ff ff       	jmp    251103 <switch+0x83>
+  251196:	44 0f b6 78 01       	movzx  r15d,BYTE PTR [rax+0x1]
+  25119b:	0f b6 48 02          	movzx  ecx,BYTE PTR [rax+0x2]
+  25119f:	0f b6 40 03          	movzx  eax,BYTE PTR [rax+0x3]
+  2511a3:	49 8b 7c cd 00       	mov    rdi,QWORD PTR [r13+rcx*8+0x0]
+  2511a8:	49 8b 74 c5 00       	mov    rsi,QWORD PTR [r13+rax*8+0x0]
+  2511ad:	eb 1f                	jmp    2511ce <switch+0x14e>
+  2511af:	44 0f b6 78 01       	movzx  r15d,BYTE PTR [rax+0x1]
+  2511b4:	0f b6 48 02          	movzx  ecx,BYTE PTR [rax+0x2]
+  2511b8:	0f b6 70 03          	movzx  esi,BYTE PTR [rax+0x3]
+  2511bc:	49 8b 7c cd 00       	mov    rdi,QWORD PTR [r13+rcx*8+0x0]
+  2511c1:	48 b8 00 00 00 00 00 	movabs rax,0x7ffc000000000000
+  2511c8:	00 fc 7f 
+  2511cb:	48 09 c6             	or     rsi,rax
+  2511ce:	e8 fd 1a 00 00       	call   252cd0 <vm::nanbox::Value::op_add>
+  2511d3:	e9 98 00 00 00       	jmp    251270 <switch+0x1f0>
+  2511d8:	0f b6 40 01          	movzx  eax,BYTE PTR [rax+0x1]
+  2511dc:	48 8b 74 24 30       	mov    rsi,QWORD PTR [rsp+0x30]
+  2511e1:	48 8b 7c 24 28       	mov    rdi,QWORD PTR [rsp+0x28]
+  2511e6:	48 8d 0c 37          	lea    rcx,[rdi+rsi*1]
+  2511ea:	48 c1 c1 17          	rol    rcx,0x17
+  2511ee:	48 01 f1             	add    rcx,rsi
+  2511f1:	4c 8b 44 24 20       	mov    r8,QWORD PTR [rsp+0x20]
+  2511f6:	4c 89 c2             	mov    rdx,r8
+  2511f9:	48 c1 e2 11          	shl    rdx,0x11
+  2511fd:	4c 8b 4c 24 18       	mov    r9,QWORD PTR [rsp+0x18]
+  251202:	49 31 f1             	xor    r9,rsi
+  251205:	4c 31 c7             	xor    rdi,r8
+  251208:	4d 31 c8             	xor    r8,r9
+  25120b:	4c 89 44 24 20       	mov    QWORD PTR [rsp+0x20],r8
+  251210:	4d 89 47 28          	mov    QWORD PTR [r15+0x28],r8
+  251214:	48 31 fe             	xor    rsi,rdi
+  251217:	48 89 74 24 30       	mov    QWORD PTR [rsp+0x30],rsi
+  25121c:	49 89 77 20          	mov    QWORD PTR [r15+0x20],rsi
+  251220:	49 31 d1             	xor    r9,rdx
+  251223:	4c 89 4c 24 18       	mov    QWORD PTR [rsp+0x18],r9
+  251228:	4d 89 4f 30          	mov    QWORD PTR [r15+0x30],r9
+  25122c:	48 c1 c7 2d          	rol    rdi,0x2d
+  251230:	48 89 7c 24 28       	mov    QWORD PTR [rsp+0x28],rdi
+  251235:	49 89 7f 38          	mov    QWORD PTR [r15+0x38],rdi
+  251239:	48 c1 e9 20          	shr    rcx,0x20
+  25123d:	48 ba 00 00 00 00 00 	movabs rdx,0x7ffc000000000000
+  251244:	00 fc 7f 
+  251247:	48 09 d1             	or     rcx,rdx
+  25124a:	49 89 4c c5 00       	mov    QWORD PTR [r13+rax*8+0x0],rcx
+  25124f:	e9 ac fe ff ff       	jmp    251100 <switch+0x80>
+  251254:	44 0f b6 78 01       	movzx  r15d,BYTE PTR [rax+0x1]
+  251259:	0f b6 48 02          	movzx  ecx,BYTE PTR [rax+0x2]
+  25125d:	0f b6 40 03          	movzx  eax,BYTE PTR [rax+0x3]
+  251261:	49 8b 7c cd 00       	mov    rdi,QWORD PTR [r13+rcx*8+0x0]
+  251266:	49 8b 74 c5 00       	mov    rsi,QWORD PTR [r13+rax*8+0x0]
+  25126b:	e8 a0 1b 00 00       	call   252e10 <vm::nanbox::Value::op_rem>
+  251270:	4b 89 44 fd 00       	mov    QWORD PTR [r13+r15*8+0x0],rax
+  251275:	4c 8b 7c 24 10       	mov    r15,QWORD PTR [rsp+0x10]
+  25127a:	e9 81 fe ff ff       	jmp    251100 <switch+0x80>
+  25127f:	0f b6 48 01          	movzx  ecx,BYTE PTR [rax+0x1]
+  251283:	0f b6 40 02          	movzx  eax,BYTE PTR [rax+0x2]
+  251287:	49 8b 4c cd 00       	mov    rcx,QWORD PTR [r13+rcx*8+0x0]
+  25128c:	49 89 4c c5 00       	mov    QWORD PTR [r13+rax*8+0x0],rcx
+  251291:	e9 6a fe ff ff       	jmp    251100 <switch+0x80>
+  251296:	0f b6 40 01          	movzx  eax,BYTE PTR [rax+0x1]
+  25129a:	49 8b 44 c5 00       	mov    rax,QWORD PTR [r13+rax*8+0x0]
+  25129f:	49 89 47 18          	mov    QWORD PTR [r15+0x18],rax
+  2512a3:	e9 58 fe ff ff       	jmp    251100 <switch+0x80>
+  2512a8:	48 83 c4 38          	add    rsp,0x38
+  2512ac:	5b                   	pop    rbx
+  2512ad:	41 5c                	pop    r12
+  2512af:	41 5d                	pop    r13
+  2512b1:	41 5e                	pop    r14
+  2512b3:	41 5f                	pop    r15
+  2512b5:	5d                   	pop    rbp
+  2512b6:	c3                   	ret    
+  2512b7:	48 8d 15 ea 3e 01 00 	lea    rdx,[rip+0x13eea]        # 2651a8 <_DYNAMIC+0xcc78>
+  2512be:	4c 89 e7             	mov    rdi,r12
+  2512c1:	48 89 de             	mov    rsi,rbx
+  2512c4:	e8 b7 ce e5 ff       	call   ae180 <core::panicking::panic_bounds_check>
+  2512c9:	0f 0b                	ud2    
+  2512cb:	48 8d 15 d6 3e 01 00 	lea    rdx,[rip+0x13ed6]        # 2651a8 <_DYNAMIC+0xcc78>
+  2512d2:	31 ff                	xor    edi,edi
+  2512d4:	31 f6                	xor    esi,esi
+  2512d6:	e8 a5 ce e5 ff       	call   ae180 <core::panicking::panic_bounds_check>
+  2512db:	0f 0b                	ud2    
+  2512dd:	48 8d 3d c5 16 e2 ff 	lea    rdi,[rip+0xffffffffffe216c5]        # 729a9 <core::unicode::unicode_data::white_space::WHITESPACE_MAP+0x493>
+  2512e4:	48 8d 15 bd 3e 01 00 	lea    rdx,[rip+0x13ebd]        # 2651a8 <_DYNAMIC+0xcc78>
+  2512eb:	be 28 00 00 00       	mov    esi,0x28
+  2512f0:	e8 fb de e5 ff       	call   af1f0 <core::panicking::panic>
+  2512f5:	0f 0b                	ud2    
 	...

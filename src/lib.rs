@@ -2,6 +2,7 @@
 pub mod util;
 
 pub mod dispatch;
+pub mod nanbox;
 pub mod op;
 pub mod vm;
 
