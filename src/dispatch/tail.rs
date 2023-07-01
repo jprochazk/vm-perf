@@ -18,7 +18,7 @@ macro_rules! __generate_tail_dispatch_loop {
       _ hlt,
     }
   ) => {
-    type Handler = fn(&mut $thread, usize, Instruction, &[$crate::op::Instruction]);
+    type Handler = fn(&mut $thread, usize, Instruction, &[$crate::op::Instruction]) -> Result<()>;
 
     paste::paste! {
       const HANDLER_TABLE: [Handler; count!(nop $($inst)* hlt)] = [
@@ -30,7 +30,7 @@ macro_rules! __generate_tail_dispatch_loop {
       #[allow(unused_mut)]
       #[inline(never)]
       #[no_mangle]
-      pub fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction]) {
+      pub fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction]) -> Result<()> {
         let thread = thread;
         let mut pc = 0;
         let mut inst;
@@ -39,21 +39,21 @@ macro_rules! __generate_tail_dispatch_loop {
       }
 
       #[allow(unused_assignments)]
-      fn op_nop(thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) {
+      fn op_nop(thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) -> Result<()> {
         pc += 1;
         $crate::__tail_dispatch!(thread, pc, inst, code, HANDLER_TABLE);
       }
 
       $(
-        fn [<op_ $inst>](thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) {
-          pc = thread.[<op_ $inst>](pc, inst);
+        fn [<op_ $inst>](thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) -> Result<()> {
+          pc = thread.[<op_ $inst>](pc, inst)?;
           $crate::__tail_dispatch!(thread, pc, inst, code, HANDLER_TABLE);
         }
       )*
 
       #[allow(unused_variables, unused_mut)]
-      fn op_hlt(thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) {
-        return;
+      fn op_hlt(thread: &mut $thread, mut pc: usize, mut inst: Instruction, code: &[$crate::op::Instruction]) -> Result<()> {
+        return Ok(());
       }
     }
   };

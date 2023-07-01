@@ -6,6 +6,9 @@ pub mod nanbox;
 pub mod op;
 pub mod vm;
 
+pub type Error = String;
+pub type Result<T, E = Error> = ::core::result::Result<T, E>;
+
 pub fn fib(n: usize) -> i32 {
   let mut a = 0;
   let mut b = 1;

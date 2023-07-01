@@ -5,8 +5,8 @@ macro_rules! bench_fixture {
     pub fn $fixture(c: &mut Criterion) {
       let mut group = c.benchmark_group(stringify!($fixture));
       bench_fixture!(@function group, switch, $fixture);
-      bench_fixture!(@function group, tail, $fixture);
-      bench_fixture!(@function group, goto, $fixture);
+      // bench_fixture!(@function group, tail, $fixture);
+      // bench_fixture!(@function group, goto, $fixture);
     }
   };
   (@function $group:ident, $dispatch:ident, $fixture:ident) => {
@@ -22,7 +22,7 @@ macro_rules! bench_fixture {
             (thread, code, assert)
           },
           |(mut thread, code, assert)| {
-            dispatch::$dispatch(&mut thread, &code);
+            dispatch::$dispatch(&mut thread, &code).unwrap();
             assert(&thread);
           },
         );

@@ -5,9 +5,10 @@ use std::str::FromStr;
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 
-use crate::dispatch::{goto, switch, tail};
+use crate::dispatch::switch;
 use crate::nanbox::Value;
 use crate::op::{instruction_set, Instruction};
+use crate::Result;
 
 pub struct Thread {
   pub regs: Vec<Value>,
@@ -51,28 +52,28 @@ impl Thread {
   }
 
   #[inline(always)]
-  fn op_ldi(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_ldi(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.xI();
     r!(self, args.x as usize) = Value::int(args.I as i32);
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_tlt(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_tlt(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     self.test = r!(self, args.a as usize).op_lt(r!(self, args.b as usize));
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_tne(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_tne(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     self.test = r!(self, args.a as usize).op_ne(r!(self, args.b as usize));
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_jif(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_jif(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.Lb();
     let pc = if !self.test {
       pc + args.L as usize
@@ -80,55 +81,61 @@ impl Thread {
       pc + 1
     };
     self.test = false;
-    pc
+    Ok(pc)
   }
 
   #[inline(always)]
-  fn op_jl(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_jl(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.Lb();
-    pc - args.L as usize
+    Ok(pc - args.L as usize)
   }
 
   #[inline(always)]
-  fn op_add(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_add(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     r!(self, args.a as usize) = r!(self, args.b as usize).op_add(r!(self, args.c as usize));
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_addc(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_addc(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     r!(self, args.a as usize) = r!(self, args.b as usize).op_add(Value::int(args.c as i32));
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_rnd(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_rnd(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     r!(self, args.a as usize) = Value::int(self.rng.gen::<i32>());
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_rem(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_rem(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     r!(self, args.a as usize) = r!(self, args.b as usize).op_rem(r!(self, args.c as usize));
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_mov(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_mov(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     r!(self, args.b as usize) = r!(self, args.a as usize);
-    pc + 1
+    Ok(pc + 1)
   }
 
   #[inline(always)]
-  fn op_ret(&mut self, pc: usize, inst: Instruction) -> usize {
+  fn op_err(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
+    let _ = (pc, inst);
+    std::hint::black_box(Err("HUH".into()))
+  }
+
+  #[inline(always)]
+  fn op_ret(&mut self, pc: usize, inst: Instruction) -> Result<usize> {
     let args = inst.args.abc();
     self.ret = r!(self, args.a as usize);
-    pc + 1
+    Ok(pc + 1)
   }
 }
 
@@ -204,6 +211,12 @@ instruction_set! {
     /// ```
     mov: abc(src, dst, _c);
 
+    /// `err`
+    /// ```text,ignore
+    /// trap
+    /// ```
+    err: abc(_a, _b, _c);
+
     /// `ret #src`
     /// ```text,ignore
     /// set RET to regs[#src]
@@ -232,12 +245,13 @@ pub mod dispatch {
       rnd,
       rem,
       mov,
+      err,
       ret,
       _ hlt,
     }
   }
 
-  goto::generate! {
+  /* goto::generate! {
     gen_jump_table();
     goto_inner(Thread) in inst::opcode {
       _ nop,
@@ -251,16 +265,17 @@ pub mod dispatch {
       rnd,
       rem,
       mov,
+      err,
       ret,
       _ hlt,
     }
   }
 
-  pub fn goto(thread: &mut Thread, code: &[Instruction]) {
+  pub fn goto(thread: &mut Thread, code: &[Instruction]) -> Result<()> {
     unsafe { goto_inner(thread, code, 0, &gen_jump_table()) }
-  }
+  } */
 
-  tail::generate! {
+  /* tail::generate! {
     tail(Thread) in inst::opcode {
       _ nop,
       ldi,
@@ -273,10 +288,11 @@ pub mod dispatch {
       rnd,
       rem,
       mov,
+      err,
       ret,
       _ hlt,
     }
-  }
+  } */
 }
 
 pub mod fixture {
@@ -286,12 +302,12 @@ pub mod fixture {
 
   pub fn run(
     f: fn() -> (Vec<Instruction>, Setup, Assert),
-    dispatch: fn(&mut Thread, &[Instruction]),
+    dispatch: fn(&mut Thread, &[Instruction]) -> Result<()>,
   ) -> Thread {
     let (code, setup, assert) = f();
     let mut thread = Thread::new();
     setup(&mut thread);
-    dispatch(&mut thread, &code);
+    dispatch(&mut thread, &code).expect("dispatch failed");
     assert(&thread);
     thread
   }
@@ -621,12 +637,12 @@ pub mod fixture {
 mod tests {
   use super::*;
 
-  type Dispatch<'a> = (&'a str, fn(&mut Thread, &[Instruction]));
+  type Dispatch<'a> = (&'a str, fn(&mut Thread, &[Instruction]) -> Result<()>);
 
   const DISPATCH: &[Dispatch] = &[
     ("switch", dispatch::switch),
-    ("goto", dispatch::goto),
-    ("tail", dispatch::tail),
+    // ("goto", dispatch::goto),
+    // ("tail", dispatch::tail),
   ];
 
   #[test]

@@ -191,7 +191,7 @@ macro_rules! __generate_goto_dispatch_loop {
       /// - jumps may not go out of bounds
       #[inline(never)]
       #[no_mangle]
-      pub unsafe fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction], pc: usize, jump_table: &[usize; N]) {
+      pub unsafe fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction], pc: usize, jump_table: &[usize; N]) -> Result<()> {
         let code = unsafe { ::core::mem::transmute::<_, &[u32]>(code) };
         let mut thread = thread as *mut $thread;
         let mut pc = pc;
@@ -206,13 +206,16 @@ macro_rules! __generate_goto_dispatch_loop {
 
         $(
           $crate::__target!($inst(thread, inst, pc, jump_table) {
-            pc = (*thread).[<op_ $inst>](pc, to_inst(inst));
+            pc = match (*thread).[<op_ $inst>](pc, to_inst(inst)) {
+              Ok(pc) => pc,
+              Err(e) => return Err(e),
+            };
             inst = code[pc];
           });
         )*
 
         $crate::__label!(hlt);
-        return;
+        return Ok(());
       }
     }
 
