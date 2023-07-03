@@ -291,6 +291,8 @@ macro_rules! impl_cmp_op {
           (self.to_float_unchecked()) $op (other.to_float_unchecked())
         } else if self.is_bool() && other.is_bool() {
           (self.to_bool_unchecked()) $op (other.to_bool_unchecked())
+        } else if self.is_none() && other.is_none() {
+          (()) $op (())
         } else if self.is_object() && other.is_object() {
           unimplemented!()
         } else {

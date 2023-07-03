@@ -4,16 +4,15 @@ macro_rules! bench_fixture {
   ($fixture:ident) => {
     pub fn $fixture(c: &mut Criterion) {
       let mut group = c.benchmark_group(stringify!($fixture));
-      bench_fixture!(@function group, switch, $fixture);
-      // bench_fixture!(@function group, tail, $fixture);
-      // bench_fixture!(@function group, goto, $fixture);
+      bench_fixture!(@function group, reg, $fixture);
+      bench_fixture!(@function group, rega, $fixture);
     }
   };
-  (@function $group:ident, $dispatch:ident, $fixture:ident) => {
+  (@function $group:ident, $vm:ident, $fixture:ident) => {
     $group.bench_function(
-      stringify!($dispatch),
+      stringify!($vm),
       |b| {
-        use ::vm::vm::reg::*;
+        use ::vm::vm::$vm::*;
         b.iter_with_setup(
           || {
             let mut thread = Thread::new();
@@ -22,7 +21,7 @@ macro_rules! bench_fixture {
             (thread, code, assert)
           },
           |(mut thread, code, assert)| {
-            dispatch::$dispatch(&mut thread, &code).unwrap();
+            dispatch::switch(&mut thread, &code).unwrap();
             assert(&thread);
           },
         );

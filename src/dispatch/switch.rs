@@ -10,7 +10,6 @@ macro_rules! __generate_switch_dispatch_loop {
   ) => {
     paste::paste! {
       #[inline(never)]
-      #[no_mangle]
       pub fn $dispatch(thread: &mut $thread, code: &[$crate::op::Instruction]) -> Result<()> {
         let mut pc = 0;
         loop {
