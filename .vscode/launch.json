@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Launch",
+      "cargo": {
+        "args": ["build"]
+      },
+      "args": [],
+      "initCommands": [
+        "command script import ${workspaceRoot}/threadvis.py"
+      ]
+    }
+  ]
+}
+

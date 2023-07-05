@@ -3,16 +3,8 @@ use criterion::{criterion_group, criterion_main, Criterion};
 macro_rules! bench_fixture {
   ($fixture:ident) => {
     pub fn $fixture(c: &mut Criterion) {
-      let mut group = c.benchmark_group(stringify!($fixture));
-      bench_fixture!(@function group, reg, $fixture);
-      bench_fixture!(@function group, rega, $fixture);
-    }
-  };
-  (@function $group:ident, $vm:ident, $fixture:ident) => {
-    $group.bench_function(
-      stringify!($vm),
-      |b| {
-        use ::vm::vm::$vm::*;
+      c.bench_function(stringify!($fixture), |b| {
+        use ::vm::thread::*;
         b.iter_with_setup(
           || {
             let mut thread = Thread::new();
@@ -21,12 +13,12 @@ macro_rules! bench_fixture {
             (thread, code, assert)
           },
           |(mut thread, code, assert)| {
-            dispatch::switch(&mut thread, &code).unwrap();
+            thread.dispatch(&code).unwrap();
             assert(&thread);
           },
-        );
-      },
-    )
+        )
+      });
+    }
   };
 }
 

@@ -1,10 +1,9 @@
 #[macro_use]
 pub mod util;
 
-pub mod dispatch;
 pub mod nanbox;
 pub mod op;
-pub mod vm;
+pub mod thread;
 
 pub type Error = String;
 pub type Result<T, E = Error> = ::core::result::Result<T, E>;
