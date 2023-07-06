@@ -270,7 +270,7 @@ macro_rules! impl_arith_op {
         } else if self.is_float() && other.is_float() {
           Value::float(self.to_float_unchecked() $op other.to_float_unchecked())
         } else {
-          panic!("type mismatch {self:?} {other:?}")
+          panic!("type mismatch")
         }
       }
     }
@@ -296,7 +296,7 @@ macro_rules! impl_cmp_op {
         } else if self.is_object() && other.is_object() {
           unimplemented!()
         } else {
-          panic!("type mismatch {self:?} {other:?}")
+          panic!("type mismatch")
         }
       }
     }

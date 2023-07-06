@@ -49,25 +49,25 @@ impl Thread {
     self.regs.resize(capacity, Value::none())
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_load_i(&mut self, pc: usize, dst: u8, n: i16) -> Result<usize> {
     r!(self, dst as usize) = Value::int(n as i32);
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_test_lt(&mut self, pc: usize, lhs: u8, rhs: u8) -> Result<usize> {
     self.test = r!(self, lhs as usize).op_lt(r!(self, rhs as usize));
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_test_ne(&mut self, pc: usize, lhs: u8, rhs: u8) -> Result<usize> {
     self.test = r!(self, lhs as usize).op_ne(r!(self, rhs as usize));
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_jump_if(&mut self, pc: usize, offset: u16) -> Result<usize> {
     let pc = if !self.test {
       pc + offset as usize
@@ -78,52 +78,53 @@ impl Thread {
     Ok(pc)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_jump_l(&mut self, pc: usize, offset: u16) -> Result<usize> {
     Ok(pc - offset as usize)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_add(&mut self, pc: usize, dst: u8, lhs: u8, rhs: u8) -> Result<usize> {
     r!(self, dst as usize) = r!(self, lhs as usize).op_add(r!(self, rhs as usize));
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_addc(&mut self, pc: usize, dst: u8, lhs: u8, n: u8) -> Result<usize> {
     r!(self, dst as usize) = r!(self, lhs as usize).op_add(Value::int(n as i32));
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_random(&mut self, pc: usize, dst: u8) -> Result<usize> {
     r!(self, dst as usize) = Value::int(self.rng.gen::<i32>());
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_rem(&mut self, pc: usize, dst: u8, lhs: u8, rhs: u8) -> Result<usize> {
     r!(self, dst as usize) = r!(self, lhs as usize).op_rem(r!(self, rhs as usize));
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_move(&mut self, pc: usize, src: u8, dst: u8) -> Result<usize> {
     r!(self, dst as usize) = r!(self, src as usize);
     Ok(pc + 1)
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_error(&mut self, _: usize) -> Result<usize> {
     std::hint::black_box(Err("HUH".into()))
   }
 
-  #[inline(always)]
+  #[inline]
   fn op_return(&mut self, pc: usize, src: u8) -> Result<usize> {
     self.ret = r!(self, src as usize);
     Ok(pc + 1)
   }
 
+  #[inline(never)]
   pub fn dispatch(&mut self, code: &[Instruction]) -> Result<()> {
     let mut pc = 0;
     loop {
